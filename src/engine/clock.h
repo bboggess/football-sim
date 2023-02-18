@@ -7,10 +7,10 @@
 #include <vector>
 
 // num of ticks per quarter
-#define QUARTER_LEN 90
+const unsigned QUARTER_LEN = 90;
 
 // converts from internal representation of time to real seconds
-#define SECONDS_PER_TICK (15 * 60 / QUARTER_LEN)
+const unsigned SECONDS_PER_TICK = 15 * 60 / QUARTER_LEN;
 
 /* Used for ClockListeners. A ClockListener can ask to be notified when any of
  * these events occurs.

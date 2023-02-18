@@ -2,6 +2,7 @@
 #include "clock.h"
 #include "gamestates.h"
 #include "utils.h"
+#include <algorithm>
 
 /**
  * Prefix down incrementing. I feel that this is useful to have because downs
@@ -64,7 +65,7 @@ void Situation::notify(PlayOutcome* outcome)
         // Again, need to send a message to the state machine
         down = FIRST;
         // goal to go situations...
-        distance = MIN(10, 100 - fieldPos);
+        distance = std::min(10, 100 - fieldPos);
     } else if (down++ == FOURTH) {
         outcome->changePoss = true;
     }
@@ -242,7 +243,7 @@ void Game::updateDownAndDistance(PlayOutcome* outcome)
     if (situation->distance <= 0) {
         situation->down = FIRST;
         // goal to go situations...
-        situation->distance = MIN(10, 100 - situation->fieldPos);
+        situation->distance = std::min(10, 100 - situation->fieldPos);
     } else if (situation->down++ == FOURTH) {
         outcome->changePoss = true;
     }
