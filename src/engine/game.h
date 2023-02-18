@@ -1,11 +1,11 @@
 #ifndef __GAME_H
 #define __GAME_H
 
-#include <vector>
-#include "team.h"
-#include "states.h"
 #include "clock.h"
+#include "states.h"
+#include "team.h"
 #include "utils.h"
+#include <vector>
 
 struct PlayOutcome;
 class Team;
@@ -16,7 +16,7 @@ class Team;
  */
 class PlayByPlayObserver {
 public:
-	virtual void notify(PlayOutcome *outcome) =0;
+    virtual void notify(PlayOutcome* outcome) = 0;
 };
 
 /**
@@ -24,15 +24,19 @@ public:
  */
 class SituationObserver {
 public:
-	virtual void onSituationChange(Situation *situation) =0;
+    virtual void onSituationChange(Situation* situation) = 0;
 };
-
 
 /**
  * set of possible game states. this is soon to be deprecated as we move to a
  * more sophisticated state machine model.
  */
-enum Down { FIRST = 1, SECOND, THIRD, FOURTH, KICKOFF, PAT };
+enum Down { FIRST = 1,
+    SECOND,
+    THIRD,
+    FOURTH,
+    KICKOFF,
+    PAT };
 
 /**
  * Represents the state of the game at the start of a play.
@@ -46,18 +50,24 @@ enum Down { FIRST = 1, SECOND, THIRD, FOURTH, KICKOFF, PAT };
  */
 class Situation : public PlayByPlayObserver {
 public:
-	Down down;
-	int distance;
-	int fieldPos;
-	Clock *clock;
+    Down down;
+    int distance;
+    int fieldPos;
+    Clock* clock;
 
-	Situation() : down(FIRST), distance(10), fieldPos(25) { clock = new Clock(); }
-	virtual ~Situation() {}
+    Situation()
+        : down(FIRST)
+        , distance(10)
+        , fieldPos(25)
+    {
+        clock = new Clock();
+    }
+    virtual ~Situation() { }
 
-	/* Updates the down, distance, field position, and clock appropriately based
-	 * on the play outcome.
-	 */
-	void notify(PlayOutcome *outcome);
+    /* Updates the down, distance, field position, and clock appropriately based
+     * on the play outcome.
+     */
+    void notify(PlayOutcome* outcome);
 };
 
 /**
@@ -68,18 +78,19 @@ public:
  * the team is on offense or defense, though.
  */
 struct TeamStats {
-	int passingYards;
-	int rushingYards;
-	unsigned int passingPlays;
-	unsigned int completions;
-	unsigned int runningPlays;
-	unsigned int sacks;
-	unsigned int interceptions;
-	unsigned int fumbles;
+    int passingYards;
+    int rushingYards;
+    unsigned int passingPlays;
+    unsigned int completions;
+    unsigned int runningPlays;
+    unsigned int sacks;
+    unsigned int interceptions;
+    unsigned int fumbles;
 
-	int totalYards() {
-		return passingYards + rushingYards;
-	}
+    int totalYards()
+    {
+        return passingYards + rushingYards;
+    }
 };
 
 /*
@@ -89,19 +100,20 @@ struct TeamStats {
  * lifespan that a TeamInfo object.
  */
 struct TeamInfo {
-	Team *team;
-	// Question: should this be a part of TeamStats instead?
-	unsigned int score;
-	unsigned int timeouts;
-	TeamStats *stats;
+    Team* team;
+    // Question: should this be a part of TeamStats instead?
+    unsigned int score;
+    unsigned int timeouts;
+    TeamStats* stats;
 
-	/* Returns a team with 3 timeouts and no points */
-	TeamInfo(Team *t) {
-		team = t;
-		score = 0;
-		timeouts = 3;
-		stats = new TeamStats();
-	}
+    /* Returns a team with 3 timeouts and no points */
+    TeamInfo(Team* t)
+    {
+        team = t;
+        score = 0;
+        timeouts = 3;
+        stats = new TeamStats();
+    }
 };
 
 /**
@@ -117,79 +129,79 @@ struct TeamInfo {
  */
 class Game : public ClockListener {
 private:
-	/* The two teams playing. The offense and defense pointers always point to
-	 * either home or away.
-	 */
-	TeamInfo *home;
-	TeamInfo *away;
-	TeamInfo *offense;
-	TeamInfo *defense;
+    /* The two teams playing. The offense and defense pointers always point to
+     * either home or away.
+     */
+    TeamInfo* home;
+    TeamInfo* away;
+    TeamInfo* offense;
+    TeamInfo* defense;
 
-	/* Controls the state of the game. Call stateMachine.update() to run a play. */
-	StateMachine<Game> *stateMachine;
+    /* Controls the state of the game. Call stateMachine.update() to run a play. */
+    StateMachine<Game>* stateMachine;
 
-	/*
-	 * All information about the game state at the time of a snap. Updated on
-	 * each run through the game loop.
-	 */
-	Situation *situation;
+    /*
+     * All information about the game state at the time of a snap. Updated on
+     * each run through the game loop.
+     */
+    Situation* situation;
 
-	/* Observers to be delivered the outcome at the conclusion of each play.*/
-	std::vector<PlayByPlayObserver *> *playObs;
-	/* Observers to be given the situation before very snap. */
-	std::vector<SituationObserver *> *sitObs;
+    /* Observers to be delivered the outcome at the conclusion of each play.*/
+    std::vector<PlayByPlayObserver*>* playObs;
+    /* Observers to be given the situation before very snap. */
+    std::vector<SituationObserver*>* sitObs;
 
-	/* swaps the offense and defense pointers */
-	void swapOffense();
+    /* swaps the offense and defense pointers */
+    void swapOffense();
+
 public:
-	/*
-	 * Sets up a game. Sets up the home team to start with the ball at their own
-	 * 25 yard line, because I haven't bothered with kickoffs yet.
-	 */
-	Game(Team *homeTeam, Team *awayTeam);
-	/* Frees up observer lists and situation objects. */
-	virtual ~Game();
-	/* Adds an observer to be given the outcome of every play */
-	void registerPlayByPlayObs(PlayByPlayObserver *obs);
-	/* Adds an observer to be given the situation before every snap */
-	void registerSitObserver(SituationObserver *obs);
-	/* The main game loop. Runs plays and handles changing situation based on
-	 * each outcome. Terminates when no time left in the 4th quarter.
-	 */
-	void gameLoop();
-	/* Changes possession, sets sitation to 1st and 10 at correct spot. */
-	void changePossession();
-	/* Gets both teams' playcalls and returns the play outcome. */
-	PlayOutcome *callPlays() const;
-	/* Update offensive/defensive stats with play outcome */
-	void updateStats(PlayOutcome *outcome);
+    /*
+     * Sets up a game. Sets up the home team to start with the ball at their own
+     * 25 yard line, because I haven't bothered with kickoffs yet.
+     */
+    Game(Team* homeTeam, Team* awayTeam);
+    /* Frees up observer lists and situation objects. */
+    virtual ~Game();
+    /* Adds an observer to be given the outcome of every play */
+    void registerPlayByPlayObs(PlayByPlayObserver* obs);
+    /* Adds an observer to be given the situation before every snap */
+    void registerSitObserver(SituationObserver* obs);
+    /* The main game loop. Runs plays and handles changing situation based on
+     * each outcome. Terminates when no time left in the 4th quarter.
+     */
+    void gameLoop();
+    /* Changes possession, sets sitation to 1st and 10 at correct spot. */
+    void changePossession();
+    /* Gets both teams' playcalls and returns the play outcome. */
+    PlayOutcome* callPlays() const;
+    /* Update offensive/defensive stats with play outcome */
+    void updateStats(PlayOutcome* outcome);
 
+    /* Gets the current stats/scores for either team*/
+    TeamStats* getHomeStats() const;
+    TeamStats* getAwayStats() const;
+    unsigned int getHomeScore() const;
+    unsigned int getAwayScore() const;
+    /* More getters */
+    Situation* getSituation() const;
+    StateMachine<Game>* getStateMachine() const;
 
-	/* Gets the current stats/scores for either team*/
-	TeamStats *getHomeStats() const;
-	TeamStats *getAwayStats() const ;
-	unsigned int getHomeScore() const;
-	unsigned int getAwayScore() const;
-	/* More getters */
-	Situation *getSituation() const;
-	StateMachine<Game> *getStateMachine() const;
-	
-	/* methods for notifiying these observers. */
-	void notifySitObs();
-	void notifyPlayByPlay(PlayOutcome *outcome);
+    /* methods for notifiying these observers. */
+    void notifySitObs();
+    void notifyPlayByPlay(PlayOutcome* outcome);
 
-	/* Setters */
-	void giveOffensePoints(unsigned int points);
-	void setHomePossession();
-	void setAwayPossession();
+    /* Setters */
+    void giveOffensePoints(unsigned int points);
+    void setHomePossession();
+    void setAwayPossession();
 
-    void updateDownAndDistance(PlayOutcome *outcome);
-    void updateClock(PlayOutcome *outcome);
+    void updateDownAndDistance(PlayOutcome* outcome);
+    void updateClock(PlayOutcome* outcome);
 
-	/* Changes the game state based on clock events. Currently handles halftiem
-	 * and the end of the game.
-	 */
-	void onClockEvent(AlarmType alarm);
+    /* Changes the game state based on clock events. Currently handles halftiem
+     * and the end of the game.
+     */
+    void onClockEvent(AlarmType alarm);
 };
 
 #endif

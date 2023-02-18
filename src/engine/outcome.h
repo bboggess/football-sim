@@ -6,22 +6,22 @@
  * user, used for clock management, etc. Some of these should probably be able
  * to be chained together.
  */
-enum PlayResult { 
-	COMPLETED_PASS,
-	INCOMPLETE_PASS,
-	FUMBLE,
-	INTERCEPTION,
-	HANDOFF,
-	SACK,
-	KICK_RETURN,
-	FIELD_GOAL_MADE,
-	FIELD_GOAL_MISS,
-	PUNT_RETURN,
-	FIELD_GOAL_BLOCK,
-	PAT_MADE,
-	PAT_MISS,
-	TWO_PT_MADE,
-	TWO_PT_MISS
+enum PlayResult {
+    COMPLETED_PASS,
+    INCOMPLETE_PASS,
+    FUMBLE,
+    INTERCEPTION,
+    HANDOFF,
+    SACK,
+    KICK_RETURN,
+    FIELD_GOAL_MADE,
+    FIELD_GOAL_MISS,
+    PUNT_RETURN,
+    FIELD_GOAL_BLOCK,
+    PAT_MADE,
+    PAT_MISS,
+    TWO_PT_MADE,
+    TWO_PT_MISS
 };
 
 /**
@@ -34,86 +34,101 @@ enum PlayResult {
  * position for the new field position, even after a turnover.
  */
 struct PlayOutcome {
-	PlayResult result;
-	int yardsGained;
-	bool changePoss;
-	bool touchdown;
+    PlayResult result;
+    int yardsGained;
+    bool changePoss;
+    bool touchdown;
 
-	PlayOutcome(PlayResult res, int yards, bool turnover, bool td) :
-		result(res), yardsGained(yardsGained), changePoss(turnover), touchdown(td) {};
+    PlayOutcome(PlayResult res, int yards, bool turnover, bool td)
+        : result(res)
+        , yardsGained(yardsGained)
+        , changePoss(turnover)
+        , touchdown(td) {};
 };
 
 class OutcomeGenerator {
-	protected:
-		int baseYards;
-		unsigned int numDice;
-		bool breakaway;
-		unsigned int breakawayLimit;
-		bool turnover;
-		bool autoTD;
+protected:
+    int baseYards;
+    unsigned int numDice;
+    bool breakaway;
+    unsigned int breakawayLimit;
+    bool turnover;
+    bool autoTD;
 
-	public:
-		OutcomeGenerator(int base, unsigned int dice, bool breakaway)
-			: baseYards(base), numDice(dice), breakaway(breakaway) {};
-		OutcomeGenerator() : OutcomeGenerator(0, 0, false) {};
-		virtual PlayOutcome *genOutcome();		
+public:
+    OutcomeGenerator(int base, unsigned int dice, bool breakaway)
+        : baseYards(base)
+        , numDice(dice)
+        , breakaway(breakaway) {};
+    OutcomeGenerator()
+        : OutcomeGenerator(0, 0, false) {};
+    virtual PlayOutcome* genOutcome();
 };
 
 class RunOutcomeGenerator : public OutcomeGenerator {
 
-	public:
-		RunOutcomeGenerator(int base, unsigned int dice, bool breakaway)
-				: OutcomeGenerator(base, dice, breakaway) {
-			breakawayLimit = 4;
-			result = HANDOFF;
-		}
+public:
+    RunOutcomeGenerator(int base, unsigned int dice, bool breakaway)
+        : OutcomeGenerator(base, dice, breakaway)
+    {
+        breakawayLimit = 4;
+        result = HANDOFF;
+    }
 
-		RunOutcomeGenerator() : OutcomeGenerator() {
-			result = HANDOFF;
-			autoTD = true;
-		}
+    RunOutcomeGenerator()
+        : OutcomeGenerator()
+    {
+        result = HANDOFF;
+        autoTD = true;
+    }
 };
 
 class PassOutcomeGenerator : public OutcomeGenerator {
 
-	public:
-		PassOutcomeGenerator(int base, unsigned int dice, bool breakaway)
-				: OutcomeGenerator(base, dice, breakaway) {
-			breakawayLimit = 4;
-			result = COMPLETED_PASS;
-		}
+public:
+    PassOutcomeGenerator(int base, unsigned int dice, bool breakaway)
+        : OutcomeGenerator(base, dice, breakaway)
+    {
+        breakawayLimit = 4;
+        result = COMPLETED_PASS;
+    }
 
-		PassOutcomeGenerator() : OutcomeGenerator() {
-			result = COMPLETED_PASS;
-			autoTD = true;
-		}
+    PassOutcomeGenerator()
+        : OutcomeGenerator()
+    {
+        result = COMPLETED_PASS;
+        autoTD = true;
+    }
 };
 
 class IncompletionGenerator : public PassOutcomeGenerator {
-	public:
-		IncompletionGenerator() : OutcomeGenerator() {
-			result = INCOMPLETE_PASS;
-		};
+public:
+    IncompletionGenerator()
+        : OutcomeGenerator()
+    {
+        result = INCOMPLETE_PASS;
+    };
 };
 
 class InterceptionOutcomeGenerator : public PassOutcomeGenerator {
-	public:
-		InterceptionOutcomeGenerator(int base, unsigned int dice, bool breakaway)
-					: OutcomeGenerator(base, dice, breakaway) {
-				breakawayLimit = 2;
-				changePoss = true;
-				result = INTERCEPTION;
-		}
+public:
+    InterceptionOutcomeGenerator(int base, unsigned int dice, bool breakaway)
+        : OutcomeGenerator(base, dice, breakaway)
+    {
+        breakawayLimit = 2;
+        changePoss = true;
+        result = INTERCEPTION;
+    }
 };
 
 class MishapGenerator : public OutcomeGenerator {
-	public:
-		PlayOutcome *genOutcome();
+public:
+    PlayOutcome* genOutcome();
 };
 
 class PressureGenerator : public OutcomeGenerator {
-	public:
-		PlayOutcome *genOutcome();		
+public:
+    PlayOutcome* genOutcome();
 };
 
 #endif

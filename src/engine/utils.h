@@ -11,6 +11,6 @@
 unsigned int rollDice(unsigned int numDice, bool breakaway);
 unsigned int rollDice(unsigned int numDice);
 
-#define MIN(A,B) (((A) > (B)) ? (B) : (A))
+#define MIN(A, B) (((A) > (B)) ? (B) : (A))
 
 #endif

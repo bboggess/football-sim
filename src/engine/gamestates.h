@@ -1,8 +1,8 @@
 #ifndef __GAME_STATES_H
 #define __GAME_STATES_H
 
-#include "states.h"
 #include "game.h"
+#include "states.h"
 
 /**
  * This header contains all possible states a football game can exist in.
@@ -24,15 +24,15 @@
  */
 class Kickoff : public State<Game> {
 private:
-	Kickoff() {}
+    Kickoff() { }
 
 public:
-	static Kickoff *getInstance();
-	/* Sets the ball on the 35 yard line for the kick */
-	void enter(Game *game);
-	/* Swaps possession to the other team, 1st and 10 at their own 25 */
-	void execute(Game *game);
-	void exit(Game *game);
+    static Kickoff* getInstance();
+    /* Sets the ball on the 35 yard line for the kick */
+    void enter(Game* game);
+    /* Swaps possession to the other team, 1st and 10 at their own 25 */
+    void execute(Game* game);
+    void exit(Game* game);
 };
 
 /* Represents a PAT attempt, either a kick or a two point attempt. The offense
@@ -41,17 +41,17 @@ public:
  */
 class ExtraPoint : public State<Game> {
 private:
-	ExtraPoint() {}
+    ExtraPoint() { }
 
 public:
-	static ExtraPoint *getInstance();
-	/* Sets up at the 3 yard line for the extra point attempt */
-	void enter(Game *game);
-	/* Gets playcalls and simulates the PAT. Updates scores and moves control
-	 * to the kickoff
-	 */
-	void execute(Game *game);
-	void exit(Game *game);
+    static ExtraPoint* getInstance();
+    /* Sets up at the 3 yard line for the extra point attempt */
+    void enter(Game* game);
+    /* Gets playcalls and simulates the PAT. Updates scores and moves control
+     * to the kickoff
+     */
+    void execute(Game* game);
+    void exit(Game* game);
 };
 
 /* Represents any typical play, where the offense snaps the ball and a touchdown
@@ -62,16 +62,16 @@ public:
  */
 class PlayFromScrimmage : public State<Game> {
 private:
-	PlayFromScrimmage() {}
+    PlayFromScrimmage() { }
 
 public:
-	static PlayFromScrimmage *getInstance();
-	void enter(Game *game);
-	/* Gets both teams playcalls and simulated a play. Depending on the outcome
-	 * control may move into one of many states.
-	 */
-	void execute(Game *game);
-	void exit(Game *game);
+    static PlayFromScrimmage* getInstance();
+    void enter(Game* game);
+    /* Gets both teams playcalls and simulated a play. Depending on the outcome
+     * control may move into one of many states.
+     */
+    void execute(Game* game);
+    void exit(Game* game);
 };
 
 /* One team has just scored a touchdown. For the sake of my sanity, it is always
@@ -80,28 +80,28 @@ public:
  */
 class Touchdown : public State<Game> {
 private:
-	Touchdown() {}
+    Touchdown() { }
 
 public:
-	static Touchdown *getInstance();
-	void enter(Game *game);
-	/* Give six points to the offense and change state to ExtraPoint */
-	void execute(Game *game);
-	void exit(Game *game);
+    static Touchdown* getInstance();
+    void enter(Game* game);
+    /* Give six points to the offense and change state to ExtraPoint */
+    void execute(Game* game);
+    void exit(Game* game);
 };
 
 /* A game that has reached halftime and is ready to restart play.
  */
 class Halftime : public State<Game> {
 private:
-	Halftime() {}
+    Halftime() { }
 
 public:
-	static Halftime *getInstance();
-	void enter(Game *game);
-	/* Set up for the away team to kickoff. */
-	void execute(Game *game);
-	void exit(Game *game);
+    static Halftime* getInstance();
+    void enter(Game* game);
+    /* Set up for the away team to kickoff. */
+    void execute(Game* game);
+    void exit(Game* game);
 };
 
 /* A Game that has ended. Checking for this state is a good way to tell
@@ -109,13 +109,13 @@ public:
  */
 class Final : public State<Game> {
 private:
-	Final() {}
+    Final() { }
 
 public:
-	static Final *getInstance();
-	void enter(Game *game);
-	void execute(Game *game);
-	void exit(Game *game);
+    static Final* getInstance();
+    void enter(Game* game);
+    void execute(Game* game);
+    void exit(Game* game);
 };
 
 #endif

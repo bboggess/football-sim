@@ -1,8 +1,8 @@
 #ifndef __TEAM_H
 #define __TEAM_H
 
-#include "playcall.h"
 #include "game.h"
+#include "playcall.h"
 
 /**
  * Should be the base Team class. Currently only responsible for calling plays,
@@ -15,8 +15,8 @@
  */
 class Team {
 public:
-	virtual ~Team() {};
-	virtual PlayCall callPlay(Situation *situation) =0;
+    virtual ~Team() {};
+    virtual PlayCall callPlay(Situation* situation) = 0;
 };
 
 /**
@@ -27,15 +27,15 @@ public:
  */
 class AITeam : public Team {
 public:
-	PlayCall callPlay(Situation *situation);
+    PlayCall callPlay(Situation* situation);
 };
 
 #include <map>
 
 class UserTeam : public Team {
 public:
-	UserTeam();
-	PlayCall callPlay(Situation *situation);
+    UserTeam();
+    PlayCall callPlay(Situation* situation);
 };
 
 #endif

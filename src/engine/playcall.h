@@ -5,29 +5,33 @@ struct Situation;
 /**
  * These are the possible playcall types, for both offense and defense.
  */
-enum PlayCall { RUN, SHORT_PASS, LONG_PASS, PUNT, FIELD_GOAL };
+enum PlayCall { RUN,
+    SHORT_PASS,
+    LONG_PASS,
+    PUNT,
+    FIELD_GOAL };
 
 /**
  * A list of the possible results of each play, which can be shown to the
  * user, used for clock management, etc. Some of these should probably be able
  * to be chained together.
  */
-enum PlayResult { 
-	COMPLETED_PASS,
-	INCOMPLETE_PASS,
-	FUMBLE,
-	INTERCEPTION,
-	HANDOFF,
-	SACK,
-	KICK_RETURN,
-	FIELD_GOAL_MADE,
-	FIELD_GOAL_MISS,
-	PUNT_RETURN,
-	FIELD_GOAL_BLOCK,
-	PAT_MADE,
-	PAT_MISS,
-	TWO_PT_MADE,
-	TWO_PT_MISS
+enum PlayResult {
+    COMPLETED_PASS,
+    INCOMPLETE_PASS,
+    FUMBLE,
+    INTERCEPTION,
+    HANDOFF,
+    SACK,
+    KICK_RETURN,
+    FIELD_GOAL_MADE,
+    FIELD_GOAL_MISS,
+    PUNT_RETURN,
+    FIELD_GOAL_BLOCK,
+    PAT_MADE,
+    PAT_MISS,
+    TWO_PT_MADE,
+    TWO_PT_MISS
 };
 
 /**
@@ -40,10 +44,10 @@ enum PlayResult {
  * position for the new field position, even after a turnover.
  */
 struct PlayOutcome {
-	PlayResult result;
-	int yardsGained;
-	bool changePoss;
-	bool touchdown;
+    PlayResult result;
+    int yardsGained;
+    bool changePoss;
+    bool touchdown;
 };
 
 /**
@@ -54,15 +58,16 @@ struct PlayOutcome {
  */
 class Play {
 private:
-	PlayCall offCall;
-	PlayCall defCall;
-	Situation *context;
+    PlayCall offCall;
+    PlayCall defCall;
+    Situation* context;
+
 public:
-	Play(PlayCall offense, PlayCall defense, Situation *sit);
-	/**
-	 * Calculates the outcome of a given play based on both teams' playcalls.
-	 */
-	PlayOutcome *runPlay();
+    Play(PlayCall offense, PlayCall defense, Situation* sit);
+    /**
+     * Calculates the outcome of a given play based on both teams' playcalls.
+     */
+    PlayOutcome* runPlay();
 };
 
 #endif
